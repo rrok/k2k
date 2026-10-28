@@ -1,18 +1,25 @@
 <!-- ======= HERO SECTION ======= -->
-<section class="hero-section position-relative d-flex align-items-center text-white overflow-hidden">
+<section class="hero-section fx-spotlight fx-wait position-relative d-flex align-items-center text-white overflow-hidden">
   <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+  <!-- Nuvola di vernice che esce dalla pistola -->
+  <app-spray-mist [gun]="heroGun" />
+  <!-- Riflesso della luce d'officina che segue il mouse + linee di velocità -->
+  <div class="hero-light position-absolute top-0 start-0 w-100 h-100" aria-hidden="true"></div>
+  <div class="hero-streaks position-absolute top-0 start-0 w-100 h-100" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
   <div class="container position-relative z-1 py-5">
     <div class="row align-items-center min-vh-75">
       <div class="col-lg-7">
-        <span class="badge bg-k2k-red rounded-pill px-3 py-2 mb-3 fs-6">Carrozzeria Professionale</span>
+        <span class="badge bg-k2k-red rounded-pill px-3 py-2 mb-3 fs-6 hero-in">Carrozzeria Professionale</span>
         <h1 class="display-3 fw-bold lh-sm mb-4">
-          L'energia della <span class="text-k2k-red">nuova carrozzeria</span><br>
+          L'energia della <span class="text-k2k-red hero-gloss">nuova carrozzeria</span><br>
           a Gambettola e Borello.
         </h1>
-        <p class="lead text-white-50 mb-4 fs-5">
+        <p class="lead text-white-50 mb-4 fs-5 hero-in" style="--d: .7s">
           Un team giovane e dinamico al tuo servizio. Gestione sinistri completa, verniciatura a forno, centro Glassdrive e auto di cortesia gratuita.
         </p>
-        <div class="d-flex flex-wrap gap-3">
+        <div class="d-flex flex-wrap gap-3 hero-in" style="--d: .9s">
           <a href="https://wa.me/393277380403?text=Ciao%2C%20vorrei%20un%20preventivo%20rapido" target="_blank" class="btn btn-whatsapp btn-lg">
             <i class="bi bi-whatsapp me-2"></i> Preventivo WhatsApp
           </a>
@@ -20,9 +27,15 @@
             <i class="bi bi-calendar-check me-2"></i> Prenota Appuntamento
           </a>
         </div>
+        <p class="hero-hint small mt-4 mb-0 d-none d-lg-block hero-in" style="--d: 1.2s">
+          <i class="fa-solid fa-spray-can-sparkles me-2"></i>Tieni premuto sullo sfondo per verniciare
+        </p>
       </div>
-      <div class="col-lg-5 d-none d-lg-block text-center">
-        <img src="logo-k2k-icon.svg" alt="K2K Logo" class="hero-logo img-fluid" >
+      <div class="col-lg-5 d-none d-lg-block text-center position-relative hero-right-col">
+        <img src="logo-k2k-icon.svg" alt="K2K Carrozzeria" class="hero-logo img-fluid">
+        <div class="hero-gun-wrap" aria-hidden="true">
+          <img #heroGun src="spray-gun.svg" alt="Pistola di verniciatura" class="hero-gun">
+        </div>
       </div>
     </div>
   </div>
@@ -47,7 +60,7 @@
               <i class="fa-solid fa-file-shield"></i>
             </div>
             <h5 class="fw-bold">Sinistri Zero Pensieri</h5>
-            <p class="text-muted small">Gestiamo tutto noi con Allianz, Generali e Prima. Nessun anticipo.</p>
+            <p class="text-muted small">Gestiamo tutto noi con Allianz, Generali, Prima e Zurich. Nessun anticipo.</p>
           </div>
         </div>
       </div>

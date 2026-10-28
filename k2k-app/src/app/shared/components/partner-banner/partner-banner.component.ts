@@ -13,6 +13,7 @@ export class PartnerBannerComponent {
     { name: 'Allianz', logo: 'partners/allianz.svg' },
     { name: 'Generali', logo: 'partners/generali.svg' },
     { name: 'Prima Assicurazioni', logo: 'partners/prima.jpg' },
+    { name: 'Zurich', logo: 'partners/zurich.svg' },
     { name: 'Glassdrive', logo: 'partners/glassdrive.svg' }
   ];
 }

@@ -2,6 +2,9 @@
    K2K SRL – Global Styles
    ============================ */
 
+/* Effetti carrozzeria: transizioni, reveal, card, bottoni */
+@use 'styles/fx';
+
 /* ----- Variables ----- */
 :root {
   --k2k-red: #c8102e;
@@ -98,16 +101,6 @@ body {
   margin-bottom: 50px;
 }
 
-/* ----- Card hover ----- */
-.card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-  }
-}
-
 /* ----- Icon circles ----- */
 .icon-circle {
   width: 60px;
@@ -143,6 +136,7 @@ body {
 
 .partner-logo-lg {
   height: 80px;
+  max-width: 100%;
   object-fit: contain;
 }
 

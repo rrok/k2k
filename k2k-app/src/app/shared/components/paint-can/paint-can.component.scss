@@ -1,0 +1,84 @@
+:host {
+  --fill: 0;
+  position: fixed;
+  left: 22px;
+  bottom: 22px;
+  z-index: 9998;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+:host(.is-idle) {
+  opacity: 0;
+  transform: translateY(30px) rotate(-12deg);
+  pointer-events: none;
+}
+
+.paint-can {
+  position: relative;
+  width: 44px;
+  height: 80px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.35));
+  transition: transform 0.3s ease;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+
+  text {
+    fill: #fff;
+    font: 900 11px 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+  }
+
+  &:hover {
+    transform: translateY(-4px) rotate(-6deg);
+  }
+}
+
+// Livello della vernice: sale dal fondo
+.paint-can__fill {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  transform: scaleY(var(--fill));
+  transition: transform 0.3s ease;
+}
+
+.paint-can__label {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--k2k-red);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.paint-can:hover .paint-can__label {
+  opacity: 1;
+}
+
+// Piena: si agita come prima di spruzzare
+:host(.is-full) .paint-can {
+  animation: shake 0.9s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 60%, 100% { transform: rotate(0); }
+  10%, 30%, 50% { transform: translateY(-6px) rotate(-10deg); }
+  20%, 40% { transform: translateY(2px) rotate(8deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host(.is-full) .paint-can { animation: none; }
+}

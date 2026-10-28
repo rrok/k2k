@@ -20,7 +20,7 @@ export class ServiziComponent {
     {
       icon: 'fa-solid fa-file-shield',
       title: 'Gestione Sinistri Completa',
-      description: 'Pratiche dirette con le assicurazioni convenzionate (Allianz, Generali, Prima) senza anticipo di denaro.',
+      description: 'Pratiche dirette con le assicurazioni convenzionate (Allianz, Generali, Prima, Zurich) senza anticipo di denaro.',
       sedi: 'Gambettola & Borello'
     },
     {

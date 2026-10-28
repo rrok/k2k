@@ -1,0 +1,770 @@
+/* ============================
+   K2K SRL – Effetti "carrozzeria"
+   ============================ */
+
+$k2k-red: #c8102e;
+
+/* Texture: metallizzato (scaglie chiare) e overspray (puntini rossi) */
+$flakes: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 2.4 -1.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+$overspray: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .78 0 0 0 0 .06 0 0 0 0 .18 0 0 0 3 -2.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+/* Durante l'intro la pagina non scorre e le animazioni dell'hero aspettano */
+html.intro-lock {
+  overflow: hidden;
+
+  .fx-wait,
+  .fx-wait * {
+    animation-play-state: paused !important;
+  }
+}
+
+/* ----- Transizione tra pagine: passata a spruzzo -----
+   La vecchia pagina sfuma via da sinistra con bordo nebulizzato, la nuova la
+   segue poco dopo: in mezzo si vede la vernice rossa metallizzata. */
+::view-transition {
+  background:
+    $flakes 0 0 / 160px,
+    radial-gradient(ellipse 60% 50% at 30% 40%, rgba(255, 90, 120, 0.55), transparent 70%),
+    radial-gradient(ellipse 50% 60% at 75% 70%, rgba(120, 0, 20, 0.6), transparent 70%),
+    $k2k-red;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.25, 1);
+  animation-fill-mode: both;
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+::view-transition-old(root) {
+  -webkit-mask-image: linear-gradient(100deg, transparent 31%, rgba(0, 0, 0, 0.4) 35%, #000 40%);
+  mask-image: linear-gradient(100deg, transparent 31%, rgba(0, 0, 0, 0.4) 35%, #000 40%);
+  animation-name: fx-spray-wipe;
+}
+
+::view-transition-new(root) {
+  -webkit-mask-image: linear-gradient(100deg, #000 31%, rgba(0, 0, 0, 0.4) 36%, transparent 40%);
+  mask-image: linear-gradient(100deg, #000 31%, rgba(0, 0, 0, 0.4) 36%, transparent 40%);
+  animation-name: fx-spray-wipe;
+  animation-delay: 0.18s;
+}
+
+@keyframes fx-spray-wipe {
+  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  to { -webkit-mask-position: 0 0; mask-position: 0 0; }
+}
+
+/* Elementi fissi restano fermi durante la passata */
+.navbar { view-transition-name: k2k-navbar; }
+.whatsapp-float { view-transition-name: k2k-whatsapp; }
+app-paint-can { view-transition-name: k2k-can; }
+
+/* ----- Livello di vernice globale (pistola che vernicia titoli e mouse) ----- */
+.fx-spray-layer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9990;
+  pointer-events: none;
+}
+
+html.fx-spraying {
+  cursor: crosshair;
+  user-select: none;
+}
+
+/* Titolo in attesa della pistola: invisibile finché non viene verniciato */
+.fx-spray {
+  -webkit-mask: linear-gradient(transparent, transparent);
+  mask: linear-gradient(transparent, transparent);
+}
+
+.fx-spray-host {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Overspray rimasto attorno al titolo */
+.fx-spray-halo {
+  position: absolute;
+  left: -28px;
+  top: -28px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+  transition: opacity 1.4s ease;
+}
+
+.is-painted > .fx-spray-halo {
+  opacity: 0.35;
+}
+
+/* Vernice fresca: alone lucido che si asciuga */
+main h1,
+main h2 {
+  transition: text-shadow 1.6s ease;
+}
+
+main h1.is-wet,
+main h2.is-wet {
+  text-shadow: 0 0 2px rgba(200, 16, 46, 0.6), 0 0 18px rgba(200, 16, 46, 0.55), 0 0 40px rgba(255, 60, 100, 0.3);
+}
+
+/* ----- Reveal allo scroll: transizione fluida e ordinata da sinistra a destra ----- */
+.fx-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1) var(--fx-delay, 0ms),
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) var(--fx-delay, 0ms);
+
+  &.is-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ----- Vernice che cola tra sezioni di colore diverso ----- */
+$drips: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 70' %3E%3Cpath fill='%23c8102e' d='M0 0H400V7H385.5C381.5 7 380.6 11 380.6 15V47.5A4.5 4.5 0 0 1 373.4 47.5V15C373.4 11 372.5 7 368.5 7H349.0C345.0 7 344.4 11 344.4 15V25.0A3.0 3.0 0 0 1 339.6 25.0V15C339.6 11 339.0 7 335.0 7H314.0C310.0 7 309.0 11 309.0 15V39.0A5.0 5.0 0 0 1 301.0 39.0V15C301.0 11 300.0 7 296.0 7H277.5C273.5 7 273.0 11 273.0 15V13.5A2.5 2.5 0 0 1 269.0 13.5V15C269.0 11 268.5 7 264.5 7H245.5C241.5 7 240.8 11 240.8 15V52.5A3.5 3.5 0 0 1 235.2 52.5V15C235.2 11 234.5 7 230.5 7H205.5C201.5 7 200.4 11 200.4 15V34.5A5.5 5.5 0 0 1 191.6 34.5V15C191.6 11 190.5 7 186.5 7H166.5C162.5 7 162.0 11 162.0 15V19.5A2.5 2.5 0 0 1 158.0 19.5V15C158.0 11 157.5 7 153.5 7H129.5C125.5 7 124.6 11 124.6 15V57.5A4.5 4.5 0 0 1 117.4 57.5V15C117.4 11 116.5 7 112.5 7H90.0C86.0 7 85.4 11 85.4 15V15.0A3.0 3.0 0 0 1 80.6 15.0V15C80.6 11 80.0 7 76.0 7H61.0C57.0 7 56.0 11 56.0 15V43.0A5.0 5.0 0 0 1 48.0 43.0V15C48.0 11 47.0 7 43.0 7H25.5C21.5 7 20.8 11 20.8 15V22.5A3.5 3.5 0 0 1 15.2 22.5V15C15.2 11 14.5 7 10.5 7H0Z'/%3E%3C/svg%3E");
+
+.fx-drip-host {
+  position: relative;
+}
+
+.fx-drip-edge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: calc(70px * var(--drip-scale, 1));
+  z-index: 3;
+  pointer-events: none;
+  background-color: var(--drip-color);
+  -webkit-mask: $drips var(--drip-x, 0) 0 / calc(400px * var(--drip-scale, 1)) 100% repeat-x;
+  mask: $drips var(--drip-x, 0) 0 / calc(400px * var(--drip-scale, 1)) 100% repeat-x;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.8s cubic-bezier(0.5, 0, 0.2, 1) 0.15s;
+
+  &.is-in {
+    transform: scaleY(1);
+  }
+}
+
+/* Badge rossi: piccole gocce che scendono */
+.fx-badge-drip {
+  position: relative;
+  overflow: visible;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 14%;
+    right: 14%;
+    top: 85%;
+    height: 18px;
+    background-color: var(--k2k-red);
+    -webkit-mask: $drips var(--drip-x, 0) 0 / 220px 18px repeat-x;
+    mask: $drips var(--drip-x, 0) 0 / 220px 18px repeat-x;
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 1.4s cubic-bezier(0.5, 0, 0.2, 1) 0.4s;
+  }
+
+  &.is-in::after {
+    transform: scaleY(1);
+  }
+}
+
+/* ----- Card: tilt 3D + riflesso trasparente (clear coat) ----- */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-hover {
+    --rx: 0deg;
+    --ry: 0deg;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease, box-shadow 0.3s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, 0.55), transparent 45%),
+        linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.35) 50%, transparent 60%);
+      background-size: 100% 100%, 250% 100%;
+      background-position: 0 0, 150% 0;
+      mix-blend-mode: soft-light;
+      opacity: 0;
+      transition: opacity 0.3s ease, background-position 0.9s ease;
+    }
+
+    &:hover {
+      transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-8px);
+
+      &::after {
+        opacity: 1;
+        background-position: 0 0, -50% 0;
+      }
+
+      .icon-circle {
+        transform: translateZ(30px) scale(1.08);
+        background-color: $k2k-red;
+        color: #fff;
+      }
+    }
+
+    .icon-circle {
+      transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    }
+  }
+}
+
+/* ----- Bottoni: riflesso che attraversa la carrozzeria ----- */
+.btn-k2k,
+.btn-whatsapp,
+.btn-k2k-outline {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -75%;
+    width: 50%;
+    z-index: -1;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+    transform: skewX(-20deg);
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    animation: fx-btn-shine 0.75s ease;
+  }
+}
+
+@keyframes fx-btn-shine {
+  to { left: 130%; }
+}
+
+/* ----- Titoli: parole rosse con pennellata e vernice che cola ----- */
+main :is(h1, h2) .text-k2k-red {
+  position: relative;
+  display: inline-block;
+  z-index: 0;
+
+  /* pennellata sotto la parola */
+  &::after {
+    content: '';
+    position: absolute;
+    left: -4%;
+    right: -4%;
+    bottom: 0.02em;
+    height: 0.32em;
+    z-index: -1;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'%3E%3Cpath fill='%23c8102e' fill-opacity='.35' d='M3 9c30-6 70-8 110-6 30 1 60 3 84 1 3 0 3 6 0 7-40 5-70 3-110 5-30 1-55 4-82 3-4 0-6-8-2-10z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  /* colature di vernice fresca */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 4%;
+    right: 4%;
+    top: 84%;
+    height: 0.62em;
+    z-index: -1;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 40'%3E%3Cg fill='%23c8102e'%3E%3Cpath d='M18.5 0h7v26.5a3.5 3.5 0 0 1-7 0z'/%3E%3Cpath d='M69 0h4v11a2 2 0 0 1-4 0z'/%3E%3Cpath d='M113.5 0h9v33.5a4.5 4.5 0 0 1-9 0z'/%3E%3Cpath d='M173.5 0h5v16.5a2.5 2.5 0 0 1-5 0z'/%3E%3Cpath d='M211 0h6v24a3 3 0 0 1-6 0z'/%3E%3Cpath d='M266 0h4v8a2 2 0 0 1-4 0z'/%3E%3C/g%3E%3C/svg%3E") 0 0 / auto 100% repeat-x;
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+}
+
+main :is(h1, h2).is-painted .text-k2k-red::after {
+  animation: fx-brush 0.8s cubic-bezier(0.6, 0, 0.2, 1) 0.15s forwards;
+}
+
+/* Colature solo in home, dove lavora il verniciatore */
+main app-home :is(h1, h2).is-painted .text-k2k-red::before {
+  animation: fx-drip 2.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+}
+
+@keyframes fx-brush {
+  to { transform: scaleX(1); }
+}
+
+@keyframes fx-drip {
+  0% { transform: scaleY(0); }
+  35% { transform: scaleY(0.55); }
+  100% { transform: scaleY(1); }
+}
+
+/* ----- Card mascherate con scotch carta, tolto come su una carrozzeria -----
+   Ogni striscia si stacca da un'estremità: la parte tolta sparisce mentre un
+   rotolino di nastro arricciato scorre lungo la striscia. */
+$tape: #ebdfb4;
+
+.fx-tape {
+  position: absolute;
+  inset: -4px -9px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.fx-tape__strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transform: rotate(var(--rot, 0deg));
+  filter: drop-shadow(0 1px 1.5px rgba(80, 60, 20, 0.28));
+}
+
+.fx-tape__body {
+  position: absolute;
+  inset: 0;
+  background:
+    /* luce sul nastro e bordo più scuro */
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 22%, transparent 78%, rgba(120, 95, 40, 0.16)),
+    /* carta crespata */
+    repeating-linear-gradient(90deg, rgba(120, 95, 40, 0.09) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(87deg, transparent 0 7px, rgba(255, 255, 255, 0.18) 7px 8px, transparent 8px 13px),
+    $flakes 0 0 / 120px,
+    $tape;
+  /* estremità strappate */
+  -webkit-mask:
+    linear-gradient(#000, #000) center / calc(100% - 16px) 100% no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 40' preserveAspectRatio='none'%3E%3Cpath d='M8 0H3L5 4 1 8l3 4-3 5 4 4-4 4 3 4-3 5 4 3-3 3h7z'/%3E%3C/svg%3E") left / 8px 100% no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 40' preserveAspectRatio='none'%3E%3Cpath d='M0 0h5L3 5l4 3-3 5 3 4-4 5 4 3-3 5 3 4-4 3 3 3H0z'/%3E%3C/svg%3E") right / 8px 100% no-repeat;
+  mask:
+    linear-gradient(#000, #000) center / calc(100% - 16px) 100% no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 40' preserveAspectRatio='none'%3E%3Cpath d='M8 0H3L5 4 1 8l3 4-3 5 4 4-4 4 3 4-3 5 4 3-3 3h7z'/%3E%3C/svg%3E") left / 8px 100% no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 40' preserveAspectRatio='none'%3E%3Cpath d='M0 0h5L3 5l4 3-3 5 3 4-4 5 4 3-3 5 3 4-4 3 3 3H0z'/%3E%3C/svg%3E") right / 8px 100% no-repeat;
+}
+
+/* Rotolino di nastro arricciato sul punto di distacco */
+.fx-tape__curl {
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  width: 16px;
+  left: 0;
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, rgba(110, 85, 35, 0.55), #f3e9c6 30%, #fffaf0 48%, #e3d29f 70%, rgba(110, 85, 35, 0.5));
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.25), -2px 0 4px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  transform: translateX(-50%);
+}
+
+.fx-tape__strip--r .fx-tape__curl {
+  left: auto;
+  right: 0;
+  transform: translateX(50%);
+}
+
+.fx-tape.is-peeling {
+  .fx-tape__strip--l .fx-tape__body {
+    animation: fx-tape-off-l 0.75s cubic-bezier(0.5, 0, 0.35, 1) var(--d) forwards;
+  }
+
+  .fx-tape__strip--r .fx-tape__body {
+    animation: fx-tape-off-r 0.75s cubic-bezier(0.5, 0, 0.35, 1) var(--d) forwards;
+  }
+
+  .fx-tape__strip--l .fx-tape__curl {
+    animation: fx-curl-l 0.75s cubic-bezier(0.5, 0, 0.35, 1) var(--d) forwards;
+  }
+
+  .fx-tape__strip--r .fx-tape__curl {
+    animation: fx-curl-r 0.75s cubic-bezier(0.5, 0, 0.35, 1) var(--d) forwards;
+  }
+}
+
+@keyframes fx-tape-off-l {
+  from { clip-path: inset(-20% 0 -20% 0); }
+  to { clip-path: inset(-20% 0 -20% 100%); }
+}
+
+@keyframes fx-tape-off-r {
+  from { clip-path: inset(-20% 0 -20% 0); }
+  to { clip-path: inset(-20% 100% -20% 0); }
+}
+
+@keyframes fx-curl-l {
+  0% { left: 0; width: 10px; opacity: 0; }
+  8% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: 100%; width: 26px; opacity: 0; transform: translateX(-50%) scaleY(0.9); }
+}
+
+@keyframes fx-curl-r {
+  0% { right: 0; width: 10px; opacity: 0; }
+  8% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { right: 100%; width: 26px; opacity: 0; transform: translateX(50%) scaleY(0.9); }
+}
+
+/* =====================================================
+   Effetti "firma" per pagina (classi assegnate da MotionFxService)
+   ===================================================== */
+
+@property --wipe {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@property --dot {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* ----- Chi Siamo: lucidatura ----- */
+.fx-polish {
+  position: relative;
+  opacity: 0.55;
+  filter: blur(2.5px) saturate(0.2) brightness(0.8) contrast(0.85);
+
+  /* tampone della lucidatrice che gira */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 1.5em;
+    height: 1.5em;
+    margin: -0.75em 0 0 -0.75em;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, #555 0 14%, transparent 15%),
+      repeating-conic-gradient(from 0deg, #f4f4f4 0 20deg, #b9b9b9 20deg 40deg);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35), inset 0 0 0 3px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &.is-in {
+    animation: pfx-polish 1.5s ease var(--pfx-delay, 0ms) forwards;
+
+    &::after {
+      animation:
+        fx-polish-pad 1.5s ease-in-out var(--pfx-delay, 0ms) forwards,
+        fx-spin 0.18s linear infinite;
+    }
+  }
+}
+
+.fx-polish-soft {
+  opacity: 0.5;
+  filter: blur(3px) grayscale(1);
+
+  &.is-in {
+    animation: pfx-polish 1.2s ease var(--pfx-delay, 0ms) forwards;
+  }
+}
+
+@keyframes pfx-polish {
+  80% { opacity: 1; filter: none; text-shadow: 0 0 18px rgba(255, 255, 255, 0.7); }
+  100% { opacity: 1; filter: none; text-shadow: none; }
+}
+
+@keyframes fx-polish-pad {
+  0% { left: 0; top: 50%; opacity: 0; }
+  10% { opacity: 1; }
+  30% { top: 25%; }
+  50% { top: 75%; }
+  70% { top: 30%; }
+  88% { opacity: 1; }
+  100% { left: 100%; top: 50%; opacity: 0; }
+}
+
+@keyframes fx-spin {
+  to { transform: rotate(360deg); }
+}
+
+
+
+/* ----- Assicurazioni: levabolli (l'ammaccatura torna in forma) ----- */
+.fx-dent {
+  transform: perspective(700px) rotateX(9deg) rotateY(-11deg) scale(0.93);
+  filter: brightness(0.93);
+
+  /* ombra dell'ammaccatura */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(circle at 45% 40%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.12) 16%, rgba(255, 255, 255, 0.45) 21%, transparent 34%);
+  }
+
+  &.is-in {
+    animation: pfx-dent 0.95s cubic-bezier(0.3, 1.5, 0.5, 1) var(--pfx-delay, 0ms) forwards;
+
+    &::before {
+      animation: fx-dent-ring 0.8s ease-out calc(var(--pfx-delay, 0ms) + 0.25s) forwards;
+    }
+  }
+}
+
+@keyframes pfx-dent {
+  0% { transform: perspective(700px) rotateX(9deg) rotateY(-11deg) scale(0.93); filter: brightness(0.93); }
+  35% { transform: perspective(700px) rotateX(4deg) rotateY(-5deg) scale(0.9); }
+  60% { transform: perspective(700px) scale(1.04); filter: none; }
+  100% { transform: none; filter: none; }
+}
+
+@keyframes fx-dent-ring {
+  to { transform: scale(1.8); opacity: 0; }
+}
+
+.fx-dent-text {
+  display: block;
+  transform: scaleY(0.72) skewX(-9deg);
+  transform-origin: bottom;
+  opacity: 0.6;
+
+  &.is-in {
+    animation: pfx-dent-text 0.85s cubic-bezier(0.3, 1.8, 0.5, 1) var(--pfx-delay, 0ms) forwards;
+  }
+}
+
+@keyframes pfx-dent-text {
+  to { transform: none; opacity: 1; }
+}
+
+/* ----- Cristalli: tergicristallo sul vetro appannato ----- */
+.fx-wiper {
+  position: relative;
+  overflow: hidden;
+
+  /* condensa con goccioline */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    z-index: 3;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95) 0 1.4px, transparent 2px) 0 0 / 23px 19px,
+      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.8) 0 1px, transparent 1.6px) 0 0 / 17px 13px,
+      rgba(214, 224, 232, 0.86);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    -webkit-mask-image: conic-gradient(from -90deg at 50% 100%, transparent var(--wipe), #000 calc(var(--wipe) + 2deg));
+    mask-image: conic-gradient(from -90deg at 50% 100%, transparent var(--wipe), #000 calc(var(--wipe) + 2deg));
+  }
+
+  /* spazzola */
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    z-index: 4;
+    width: 5px;
+    height: var(--blade, 140%);
+    margin-left: -2.5px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #0d0e10, #4a4f55 50%, #0d0e10);
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.35);
+    transform-origin: 50% 100%;
+    transform: rotate(calc(var(--wipe) - 90deg));
+    pointer-events: none;
+  }
+
+  &.is-in {
+    animation: pfx-wipe 1.3s cubic-bezier(0.45, 0, 0.3, 1) var(--pfx-delay, 0ms) forwards;
+
+    &::after {
+      animation: fx-blade-out 0.3s ease calc(var(--pfx-delay, 0ms) + 1.15s) forwards;
+    }
+  }
+}
+
+@keyframes pfx-wipe {
+  from { --wipe: 0deg; }
+  to { --wipe: 182deg; }
+}
+
+@keyframes fx-blade-out {
+  to { opacity: 0; }
+}
+
+/* ----- Aziende: la flotta entra in fila e frena ----- */
+.fx-fleet {
+  opacity: 0;
+  transform: translateX(-140px) skewX(-14deg);
+  filter: blur(4px);
+
+  &.is-in {
+    animation: pfx-drive 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) var(--pfx-delay, 0ms) forwards;
+  }
+}
+
+@keyframes pfx-drive {
+  65% { opacity: 1; transform: translateX(10px) skewX(5deg); filter: none; }
+  82% { transform: translateX(-3px) skewX(-1deg); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+
+/* ----- Contatti: spruzzata attraverso lo stencil (a puntini) ----- */
+.fx-stencil {
+  -webkit-mask-image: radial-gradient(circle, #000 var(--dot), transparent calc(var(--dot) + 0.6px));
+  mask-image: radial-gradient(circle, #000 var(--dot), transparent calc(var(--dot) + 0.6px));
+  -webkit-mask-size: 7px 7px;
+  mask-size: 7px 7px;
+
+  &.is-in {
+    animation: pfx-stencil 1.2s ease-in var(--pfx-delay, 0ms) forwards;
+  }
+}
+
+@keyframes pfx-stencil {
+  from { --dot: 0px; }
+  to { --dot: 5.4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-polish, .fx-polish-soft, .fx-dent, .fx-dent-text, .fx-fleet, .fx-stencil {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .fx-polish::after, .fx-dent::before, .fx-wiper::before, .fx-wiper::after {
+    display: none;
+  }
+}
+
+/* ----- Sezioni rosse: vernice metallizzata con riflesso che scorre ----- */
+main section.bg-k2k-red {
+  background-image:
+    linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.16) 48%, transparent 60%),
+    $flakes,
+    radial-gradient(ellipse at 20% 0%, rgba(255, 90, 120, 0.35), transparent 60%),
+    radial-gradient(ellipse at 90% 100%, rgba(90, 0, 15, 0.45), transparent 60%);
+  background-size: 300% 100%, 160px 160px, 100% 100%, 100% 100%;
+  background-position: 120% 0, 0 0, 0 0, 0 0;
+  animation: fx-metal-sheen 7s ease-in-out infinite;
+}
+
+@keyframes fx-metal-sheen {
+  0%, 30% { background-position: 120% 0, 0 0, 0 0, 0 0; }
+  100% { background-position: -20% 0, 0 0, 0 0, 0 0; }
+}
+
+/* ----- Sezioni scure: aria della cabina con nebbia e overspray ----- */
+main section.bg-k2k-dark {
+  background-image:
+    $overspray,
+    radial-gradient(ellipse 45% 55% at 12% 25%, rgba(200, 16, 46, 0.2), transparent 70%),
+    radial-gradient(ellipse 40% 50% at 88% 80%, rgba(255, 60, 100, 0.12), transparent 70%);
+  background-size: 220px 220px, 200% 200%, 200% 200%;
+  animation: fx-booth-mist 16s ease-in-out infinite alternate;
+}
+
+@keyframes fx-booth-mist {
+  from { background-position: 0 0, 0% 0%, 100% 100%; }
+  to { background-position: 0 0, 30% 20%, 70% 60%; }
+}
+
+/* Intestazioni delle pagine interne: sottotitolo che sale + nebbia che attraversa */
+main > * > section:first-child:not(.hero-section) {
+  position: relative;
+  overflow: hidden;
+
+  .lead {
+    animation: fx-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -20% -10%;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 25% 35% at 50% 50%, rgba(255, 60, 100, 0.22), transparent 70%),
+      radial-gradient(ellipse 18% 28% at 30% 60%, rgba(200, 16, 46, 0.25), transparent 70%);
+    background-size: 60% 100%, 50% 100%;
+    background-repeat: no-repeat;
+    filter: blur(6px);
+    animation: fx-mist-drift 9s linear infinite;
+  }
+}
+
+@keyframes fx-rise {
+  from { opacity: 0; transform: translateY(30px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes fx-mist-drift {
+  from { background-position: 140% 0, 160% 0; }
+  to { background-position: -60% 0, -80% 0; }
+}
+
+/* ----- Riduzione movimento: tutto statico ----- */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    -webkit-mask: none;
+    mask: none;
+  }
+
+  .fx-reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  main :is(h1, h2) .text-k2k-red::after,
+  main :is(h1, h2) .text-k2k-red::before {
+    animation: none;
+    transform: none;
+  }
+
+  main > * > section:first-child:not(.hero-section) {
+    .lead, &::before { animation: none; }
+  }
+
+  main section.bg-k2k-red,
+  main section.bg-k2k-dark {
+    animation: none;
+  }
+
+  .btn-k2k:hover::before,
+  .btn-whatsapp:hover::before,
+  .btn-k2k-outline:hover::before {
+    animation: none;
+  }
+}
