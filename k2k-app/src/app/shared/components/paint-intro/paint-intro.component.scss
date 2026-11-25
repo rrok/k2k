@@ -3,46 +3,69 @@
   inset: 0;
   z-index: 20000;
   cursor: pointer;
-  // Pareti della cabina: lamiera scura con profili verticali
-  --booth: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 120px) #151515;
+  overflow: hidden;
 
-  // Due ante della cabina che si aprono in verticale
+  &--open {
+    pointer-events: none;
+
+    .paint-intro__door {
+      animation: door-up 1.2s cubic-bezier(0.7, 0, 0.2, 1) forwards;
+    }
+  }
+}
+
+// Saracinesca: doghe orizzontali di lamiera, guarnizione e maniglia in basso
+.paint-intro__door {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 45%, rgba(255, 255, 255, 0.07), transparent 70%),
+    repeating-linear-gradient(180deg, #2b2d33 0 1px, #1c1d21 1px 4px, #18191c 4px 30px, #0c0d0f 30px 34px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+
   &::before,
   &::after {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
-    height: 50%;
-    background: var(--booth);
-    transition: transform 0.85s cubic-bezier(0.77, 0, 0.18, 1);
-    z-index: -1;
   }
 
-  &::before { top: 0; }
-  &::after { bottom: 0; }
+  // traversa inferiore con bordo rosso
+  &::before {
+    bottom: 0;
+    height: 26px;
+    background: linear-gradient(180deg, #3a3d44, #17181b);
+    box-shadow: inset 0 -5px 0 var(--k2k-red), 0 8px 40px 6px rgba(255, 255, 255, 0.28);
+  }
 
-  &--open {
-    pointer-events: none;
-
-    &::before { transform: translateY(-100%); box-shadow: 0 2px 0 var(--k2k-red); }
-    &::after { transform: translateY(100%); box-shadow: 0 -2px 0 var(--k2k-red); }
-
-    .paint-intro__canvas,
-    .paint-intro__label {
-      opacity: 0;
-      transform: scale(1.15);
-    }
+  // maniglia
+  &::after {
+    left: 50%;
+    right: auto;
+    bottom: 40px;
+    width: 96px;
+    height: 9px;
+    margin-left: -48px;
+    border-radius: 5px;
+    background: linear-gradient(180deg, #d5dade, #70777e);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
   }
 }
 
+// Un piccolo contraccolpo, poi la serranda sale
+@keyframes door-up {
+  0% { transform: translateY(0); }
+  14% { transform: translateY(0.8%); }
+  100% { transform: translateY(-104%); }
+}
+
 .paint-intro__canvas {
-  background: radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, 0.06), transparent 60%);
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  transition: opacity 0.5s ease, transform 0.8s ease, filter 0.4s ease;
+  transition: filter 0.4s ease;
 
   &--done {
     filter: drop-shadow(0 0 30px rgba(200, 16, 46, 0.55));
@@ -53,16 +76,15 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 12vh;
+  bottom: 13vh;
   text-align: center;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 0.8rem;
-  letter-spacing: 0.35em;
+  color: rgba(255, 255, 255, 0.6);
+  font: 600 0.95rem / 1.6 var(--font-display);
+  letter-spacing: 0.34em;
   text-transform: uppercase;
-  transition: opacity 0.4s ease, transform 0.6s ease;
 
   span { display: block; animation: blink 1.4s ease-in-out infinite; }
-  small { letter-spacing: 0.2em; opacity: 0.6; }
+  small { letter-spacing: 0.22em; opacity: 0.6; }
 }
 
 @keyframes blink {

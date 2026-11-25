@@ -1,48 +1,35 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-k2k-dark sticky-top shadow-sm py-2">
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" [class.is-open]="!isCollapsed">
   <div class="container">
     <!-- Logo -->
-    <a class="navbar-brand d-flex align-items-center" routerLink="/" (click)="closeNav()">
-      <img src="logo-k2k.svg" alt="K2K SRL" height="45" class="me-2">
+    <a class="navbar-brand" routerLink="/" (click)="closeNav()">
+      <img src="logo-k2k.svg" alt="K2K SRL" height="42">
     </a>
 
-    <!-- Toggler -->
-    <button class="navbar-toggler border-0" type="button" (click)="toggleNav()" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <!-- Menu mobile -->
+    <button class="nav-burger d-lg-none" type="button" (click)="toggleNav()"
+            [attr.aria-expanded]="!isCollapsed" aria-controls="navbarNav"
+            [attr.aria-label]="isCollapsed ? 'Apri il menu' : 'Chiudi il menu'">
+      <span></span><span></span><span></span>
     </button>
 
     <!-- Nav links -->
-    <div class="collapse navbar-collapse" [class.show]="!isCollapsed" id="navbarNav">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeNav()">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/chi-siamo" routerLinkActive="active" (click)="closeNav()">Chi Siamo</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/servizi" routerLinkActive="active" (click)="closeNav()">Servizi</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/assicurazioni" routerLinkActive="active" (click)="closeNav()">Assicurazioni</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/cristalli" routerLinkActive="active" (click)="closeNav()">Cristalli</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/aziende" routerLinkActive="active" (click)="closeNav()">Aziende</a>
-        </li>
-        <li class="nav-item ms-lg-2">
-          <a class="btn btn-k2k btn-sm px-3 py-2" routerLink="/contatti" (click)="closeNav()">
-            <i class="bi bi-calendar-check me-1"></i> Appuntamento
+    <div class="navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        @for (link of links; track link.path; let i = $index) {
+          <li class="nav-item" [style.--i]="i">
+            <a class="nav-link" [routerLink]="link.path" routerLinkActive="active"
+               [routerLinkActiveOptions]="{ exact: link.path === '/' }" (click)="closeNav()">{{ link.label }}</a>
+          </li>
+        }
+        <li class="nav-item nav-item--cta" [style.--i]="links.length">
+          <a class="btn btn-k2k btn-sm" routerLink="/contatti" (click)="closeNav()">
+            <i class="bi bi-calendar-check me-2"></i>Appuntamento
           </a>
         </li>
       </ul>
     </div>
   </div>
 
-  <!-- Avanzamento lettura: striscia di vernice dipinta da una mini pistola -->
-  <div class="nav-paint" aria-hidden="true">
-    <div class="nav-paint__stroke"></div>
-    <img class="nav-paint__gun" src="spray-gun.svg" alt="">
-  </div>
+  <!-- Avanzamento lettura: striscia di vernice -->
+  <div class="nav-paint" aria-hidden="true"></div>
 </nav>

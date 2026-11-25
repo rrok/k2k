@@ -1,69 +1,182 @@
 .navbar {
-  .nav-link {
-    position: relative;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    transition: color 0.3s ease;
+  min-height: var(--nav-h);
+  padding-block: 0;
+  background: none;
 
-    // Sottolineatura "a spruzzo": bordo sfumato e puntinato come vernice nebulizzata
-    &::after {
-      content: '';
-      position: absolute;
-      left: 8%;
-      right: 8%;
-      bottom: 2px;
-      height: 6px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle, rgba(255, 255, 255, 0.35) 0.6px, transparent 1.2px) 0 0 / 5px 4px,
-        radial-gradient(ellipse at center, rgba(200, 16, 46, 0.95) 0%, rgba(200, 16, 46, 0.55) 45%, transparent 72%);
-      filter: blur(0.4px);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.35s cubic-bezier(0.6, 0, 0.2, 1);
-    }
-
-    &:hover::after,
-    &.active::after {
-      transform: scaleX(1);
-    }
-
-    &.active {
-      color: var(--k2k-red) !important;
-    }
+  // Il vetro sta su uno pseudo-elemento: backdrop-filter sulla navbar
+  // intrappolerebbe il menu mobile (position: fixed) dentro la barra
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgba(9, 9, 11, 0.86);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 }
 
+.navbar-brand {
+  padding-block: 0;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  &:hover { transform: skewX(-6deg) scale(1.04); }
+}
+
+.navbar-nav { gap: 0.25rem; }
+
+.nav-link {
+  position: relative;
+  padding: 0.5rem 0.8rem !important;
+  font: 600 1.08rem / 1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72) !important;
+  transition: color 0.3s ease;
+
+  // Sottolineatura "a spruzzo": bordo sfumato e puntinato come vernice nebulizzata
+  &::after {
+    content: '';
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    bottom: -1px;
+    height: 6px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, rgba(255, 255, 255, 0.35) 0.6px, transparent 1.2px) 0 0 / 5px 4px,
+      radial-gradient(ellipse at center, rgba(238, 37, 69, 0.95) 0%, rgba(200, 16, 46, 0.55) 45%, transparent 72%);
+    filter: blur(0.4px);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.6, 0, 0.2, 1);
+  }
+
+  &:hover,
+  &.active {
+    color: #fff !important;
+  }
+
+  &:hover::after,
+  &.active::after {
+    transform: scaleX(1);
+  }
+}
+
+.nav-item--cta { margin-left: 0.7rem; }
+
+// Striscia di vernice che avanza con la lettura della pagina
 .nav-paint {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -3px;
-  height: 4px;
+  bottom: -2px;
+  height: 3px;
   pointer-events: none;
-}
-
-.nav-paint__stroke {
-  height: 100%;
-  width: calc(var(--paint-progress, 0) * 100%);
   background:
     radial-gradient(circle, rgba(255, 200, 210, 0.5) 0.7px, transparent 1.3px) 0 0 / 6px 5px,
-    linear-gradient(180deg, transparent, var(--k2k-red) 30%, var(--k2k-red) 70%, transparent);
-  box-shadow: 0 0 10px rgba(200, 16, 46, 0.7), 0 0 22px rgba(200, 16, 46, 0.35);
+    linear-gradient(90deg, var(--k2k-red-deep), var(--k2k-red), var(--k2k-red-hot));
+  box-shadow: 0 0 10px rgba(238, 37, 69, 0.7), 0 0 22px rgba(200, 16, 46, 0.35);
+  transform: scaleX(var(--paint-progress, 0));
+  transform-origin: left;
 }
 
-// Pistola in punta, sotto la striscia, con l'ugello rivolto verso l'alto
-.nav-paint__gun {
-  position: absolute;
-  top: -8px;
-  left: calc(var(--paint-progress, 0) * 100%);
-  width: 24px;
-  transform: translateX(2px) rotate(35deg);
-  transform-origin: 4% 47%;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
-  opacity: calc(min(var(--paint-progress, 0) * 40, 1));
+// Tre linee che diventano una X
+.nav-burger {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  background: none;
+
+  span {
+    position: absolute;
+    left: 9px;
+    right: 9px;
+    height: 2.5px;
+    border-radius: 2px;
+    background: #fff;
+    transform: skewX(-18deg);
+    transition: transform 0.4s cubic-bezier(0.6, 0, 0.2, 1), opacity 0.2s ease, top 0.4s cubic-bezier(0.6, 0, 0.2, 1);
+  }
+
+  span:nth-child(1) { top: 14px; }
+  span:nth-child(2) { top: 22px; background: var(--k2k-red-hot); }
+  span:nth-child(3) { top: 30px; }
+}
+
+.is-open .nav-burger {
+  span:nth-child(1) { top: 22px; transform: rotate(45deg); }
+  span:nth-child(2) { opacity: 0; }
+  span:nth-child(3) { top: 22px; transform: rotate(-45deg); }
+}
+
+// Mobile: menu a tutto schermo, voci grandi che entrano una dopo l'altra
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    position: fixed;
+    inset: var(--nav-h) 0 0;
+    display: flex !important;
+    align-items: center;
+    padding: 0 max(24px, 7vw) 12vh;
+    background:
+      radial-gradient(ellipse 90% 50% at 100% 100%, rgba(200, 16, 46, 0.28), transparent 70%),
+      #09090b;
+    overflow-y: auto;
+    visibility: hidden;
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.55s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.3s ease, visibility 0s 0.55s;
+  }
+
+  .is-open .navbar-collapse {
+    visibility: visible;
+    opacity: 1;
+    clip-path: inset(0);
+    transition: clip-path 0.55s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.2s ease, visibility 0s;
+  }
+
+  .navbar-nav {
+    width: 100%;
+    gap: 0;
+  }
+
+  .nav-item {
+    opacity: 0;
+    transform: translateX(-28px);
+    transition: opacity 0.3s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .is-open .nav-item {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.12s + var(--i) * 0.05s);
+  }
+
+  .nav-link {
+    padding: 0.32em 0 !important;
+    font: italic 800 clamp(2.3rem, 11vw, 3.4rem) / 1 var(--font-display);
+    letter-spacing: 0;
+
+    &::after { display: none; }
+
+    &.active { color: var(--k2k-red-hot) !important; }
+  }
+
+  .nav-item--cta {
+    margin: 1.6rem 0 0;
+
+    .btn {
+      padding: 0.8em 1.8em;
+      font-size: 1.2rem;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .navbar .nav-link::after { transition: none; }
+  .nav-link::after,
+  .navbar-collapse,
+  .nav-item { transition: none !important; }
 }

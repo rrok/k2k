@@ -9,13 +9,36 @@ export const GUN = { w: 200, h: 220, tipX: 9, tipY: 104 };
 /** Direzione di spruzzo verso il basso a sinistra (35° sotto l'orizzontale). */
 export const SPRAY_ANGLE = Math.PI - (35 * Math.PI) / 180;
 
-type Rgb = [number, number, number];
+export type Rgb = [number, number, number];
 
-const PALETTE: { rgb: Rgb; weight: number }[] = [
-  { rgb: [200, 16, 46], weight: 0.62 },
-  { rgb: [255, 60, 105], weight: 0.24 },
-  { rgb: [255, 170, 190], weight: 0.14 }
+/** Rosso K2K: tinta predefinita della vernice. */
+export const K2K_RED: Rgb = [200, 16, 46];
+
+const lighten = (c: Rgb, t: number): Rgb => [
+  Math.round(c[0] + (255 - c[0]) * t),
+  Math.round(c[1] + (255 - c[1]) * t),
+  Math.round(c[2] + (255 - c[2]) * t)
 ];
+
+const darken = (c: Rgb, t: number): Rgb => [
+  Math.round(c[0] * (1 - t)),
+  Math.round(c[1] * (1 - t)),
+  Math.round(c[2] * (1 - t))
+];
+
+const WEIGHTS = [0.62, 0.24, 0.14];
+const paletteCache = new Map<string, Rgb[]>();
+
+/** Tre toni della nebbia per una tinta: pieno, schiarito, quasi bianco. */
+function palette(tint: Rgb): Rgb[] {
+  const key = tint.join();
+  let p = paletteCache.get(key);
+  if (!p) {
+    p = [tint, lighten(tint, 0.32), lighten(tint, 0.7)];
+    paletteCache.set(key, p);
+  }
+  return p;
+}
 
 export function gaussian(): number {
   let u = 0;
@@ -313,12 +336,13 @@ function sprite([r, g, b]: Rgb): HTMLCanvasElement {
   return c;
 }
 
-function pickColor(): Rgb {
+function pickColor(tint: Rgb): Rgb {
+  const tones = palette(tint);
   let n = Math.random();
-  for (const p of PALETTE) {
-    if ((n -= p.weight) <= 0) return p.rgb;
+  for (let i = 0; i < tones.length; i++) {
+    if ((n -= WEIGHTS[i]) <= 0) return tones[i];
   }
-  return PALETTE[0].rgb;
+  return tones[0];
 }
 
 export interface Particle {
@@ -349,6 +373,8 @@ export interface EmitOptions {
   cloud?: number;
   /** Moltiplicatore dell'opacità della nebbia. */
   density?: number;
+  /** Tinta della vernice (predefinita: rosso K2K). */
+  tint?: Rgb;
   owner?: unknown;
 }
 
@@ -367,6 +393,8 @@ export class SprayCloud {
     const drops = o.drops ?? 10;
     const cloud = o.cloud ?? 1;
     const density = o.density ?? 1;
+    const tint = o.tint ?? K2K_RED;
+    const deep = darken(tint, 0.25);
 
     for (let i = 0; i < mist; i++) {
       // Velocità molto varie: la nebbia si distribuisce lungo tutto il cono
@@ -383,7 +411,7 @@ export class SprayCloud {
         age: 0,
         life: 0.8 + Math.random() * 0.8,
         alpha: (0.06 + Math.random() * 0.08) * density,
-        sprite: sprite(pickColor()),
+        sprite: sprite(pickColor(tint)),
         color: '',
         dist: 0,
         travelled: 0,
@@ -405,7 +433,9 @@ export class SprayCloud {
         age: 0,
         life: 1.5,
         alpha: 1,
-        color: tone < 0.75 ? `rgba(200,16,46,${0.55 + Math.random() * 0.4})` : `rgba(150,8,30,${0.6 + Math.random() * 0.4})`,
+        color: tone < 0.75
+          ? `rgba(${tint[0]},${tint[1]},${tint[2]},${0.55 + Math.random() * 0.4})`
+          : `rgba(${deep[0]},${deep[1]},${deep[2]},${0.6 + Math.random() * 0.4})`,
         dist: o.reach * (0.85 + Math.abs(gaussian()) * 0.5),
         travelled: 0,
         owner: o.owner
