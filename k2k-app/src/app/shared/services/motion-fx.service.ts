@@ -5,7 +5,7 @@ import { SprayPaintService } from './spray-paint.service';
 const REVEAL_SELECTOR = [
   'main section:not(:first-child) .section-header',
   'main section:not(:first-child) .row > [class*="col-"]',
-  'main section:not(:first-child) > .container > :not(.row):not(.section-header):not(h1):not(h2)'
+  'main section:not(:first-child) > .container > :not(.row):not(.section-header):not(h1):not(h2):not([data-inview])'
 ].join(',');
 
 
@@ -16,10 +16,12 @@ const REVEAL_SELECTOR = [
  * anima quando entra nello schermo (classe is-in).
  */
 const PAGE_FX: Record<string, { selector: string; fx: string }[]> = {
+  // Smascheratura: la carta protettiva viene tolta dalle schede appena verniciate
+  'app-home': [{ selector: '.why-card', fx: 'fx-unmask' }],
   // Lucidatura: da opaco e graffiato a lucido, con il tampone della lucidatrice
   'app-chi-siamo': [
     { selector: 'h1, h2', fx: 'fx-polish' },
-    { selector: 'img, .col-6 > .d-flex', fx: 'fx-polish-soft' }
+    { selector: 'img, .car-still, .col-6 > .d-flex', fx: 'fx-polish-soft' }
   ],
   // Levabolli: l'ammaccatura torna in forma con un colpo secco
   'app-assicurazioni': [
@@ -34,17 +36,18 @@ const PAGE_FX: Record<string, { selector: string; fx: string }[]> = {
   'app-contatti': [{ selector: 'h1, h2, section:not(:first-child) .card', fx: 'fx-stencil' }]
 };
 
+/** Elementi che ricevono la classe is-in (e la tengono) quando entrano nello schermo. */
+const INVIEW_SELECTOR = '[data-inview]';
+
 const TILT_SELECTOR = '.card-hover';
-const SPOTLIGHT_SELECTOR = '.fx-spotlight';
 
 /**
  * Effetti di movimento, applicati automaticamente alle pagine:
  * - reveal "a spruzzo" delle sezioni allo scroll
  * - un effetto da carrozzeria diverso per ogni pagina (PAGE_FX)
- * - vernice che cola tra sezioni di colore diverso e sotto i badge rossi
- * - card coperte di scotch carta che viene tolto striscia per striscia
+ * - vernice che cola tra sezioni di colore diverso
+ * - schede della home coperte dalla carta da mascheratura, che viene tolta
  * - tilt 3D + riflesso trasparente sulle card
- * - riflesso di luce che segue il mouse (spotlight)
  */
 @Injectable({ providedIn: 'root' })
 export class MotionFxService implements OnDestroy {
@@ -101,6 +104,13 @@ export class MotionFxService implements OnDestroy {
 
     this.spray.scan(this.root);
 
+    this.root.querySelectorAll<HTMLElement>(INVIEW_SELECTOR).forEach(el => {
+      if (el.dataset['inview']) return;
+      el.dataset['inview'] = '1';
+      if (this.reduced) el.classList.add('is-in');
+      else this.io!.observe(el);
+    });
+
     if (this.reduced) return;
 
     this.scanPageFx(this.root);
@@ -154,7 +164,7 @@ export class MotionFxService implements OnDestroy {
   /**
    * Vernice che cola: dove una sezione confina con una di colore diverso,
    * il colore di quella sopra cola su quella sotto. Ogni bordo ha gocce
-   * diverse (posizione e scala casuali). Anche i badge rossi gocciolano.
+   * diverse (posizione e scala casuali).
    */
   private scanDripEdges(root: HTMLElement): void {
     const blocks = Array.from(root.querySelectorAll<HTMLElement>('main section, footer'));
@@ -183,13 +193,6 @@ export class MotionFxService implements OnDestroy {
       if (this.reduced) edge.classList.add('is-in');
       else this.io!.observe(edge);
     }
-
-    if (this.reduced) return;
-    root.querySelectorAll<HTMLElement>('main .badge.bg-k2k-red:not(.fx-badge-drip)').forEach(el => {
-      el.classList.add('fx-badge-drip');
-      el.style.setProperty('--drip-x', `${Math.round(Math.random() * 220)}px`);
-      this.io!.observe(el);
-    });
   }
 
   /** Effetto firma della pagina corrente. */
@@ -232,13 +235,6 @@ export class MotionFxService implements OnDestroy {
       card.style.setProperty('--my', `${y * 100}%`);
       card.style.setProperty('--rx', `${(0.5 - y) * 10}deg`);
       card.style.setProperty('--ry', `${(x - 0.5) * 12}deg`);
-    }
-
-    const spot = target.closest<HTMLElement>(SPOTLIGHT_SELECTOR);
-    if (spot) {
-      const r = spot.getBoundingClientRect();
-      spot.style.setProperty('--sx', `${e.clientX - r.left}px`);
-      spot.style.setProperty('--sy', `${e.clientY - r.top}px`);
     }
   };
 

@@ -1,13 +1,26 @@
-<section class="py-4 bg-white">
-  <div class="container">
-    <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 gap-md-5">
-      @for (partner of partners; track partner.name) {
-        <img
-          [src]="partner.logo"
-          [alt]="partner.name"
-          [class]="large ? 'partner-logo-lg' : 'partner-logo'"
-        >
+@if (large) {
+  <section class="partners partners--large">
+    <div class="container">
+      <div class="partners__grid">
+        @for (partner of partners; track partner.name) {
+          <img [src]="partner.logo" [alt]="partner.name" class="partner-logo-lg">
+        }
+      </div>
+    </div>
+  </section>
+} @else {
+  <!-- Nastro continuo: la seconda serie è una copia per il loop -->
+  <section class="partners" aria-label="Assicurazioni e partner">
+    <div class="partners__track">
+      @for (copy of [0, 1]; track copy) {
+        <div class="partners__set" [attr.aria-hidden]="copy === 1 ? 'true' : null">
+          @for (n of [0, 1]; track n) {
+            @for (partner of partners; track partner.name) {
+              <img [src]="partner.logo" [alt]="copy + n === 0 ? partner.name : ''" class="partner-logo">
+            }
+          }
+        </div>
       }
     </div>
-  </div>
-</section>
+  </section>
+}

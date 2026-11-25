@@ -2,7 +2,8 @@ import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
 import { Painter, Particle, SPRAY_ANGLE, SprayCloud, drawPainter, drawGun, painterTip, preloadGun } from '../fx/spray-engine';
 
 /** Titoli della home che il verniciatore vernicia dal vivo quando entrano nello schermo. */
-const HEADING_SELECTOR = 'main app-home h1, main app-home h2';
+const HEADING_SELECTOR = 'main app-home h2:not(.no-spray)';
+
 
 /** Margine dell'alone di overspray attorno al titolo, in px. */
 const HALO_PAD = 28;

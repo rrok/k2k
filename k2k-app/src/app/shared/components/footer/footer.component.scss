@@ -1,3 +1,31 @@
-footer a:hover {
-  color: var(--k2k-red) !important;
+.site-footer {
+  position: relative;
+  // spazio per la vernice che cola dalla sezione sopra
+  padding: 104px 0 22px;
+  overflow: hidden;
+
+  a {
+    transition: color 0.3s ease;
+
+    &:hover { color: var(--k2k-red-hot) !important; }
+  }
+
+  h6 {
+    font: 700 0.95rem / 1 var(--font-display);
+    letter-spacing: 0.16em;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+// Marchio gigante sul fondo, come dipinto a terra
+.site-footer__mark {
+  position: absolute;
+  right: -0.04em;
+  bottom: -0.2em;
+  font: italic 800 clamp(11rem, 30vw, 24rem) / 0.8 var(--font-display);
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.055);
+  pointer-events: none;
+  user-select: none;
 }

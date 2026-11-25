@@ -1,150 +1,148 @@
-<!-- ======= HERO SECTION ======= -->
-<section class="hero-section fx-spotlight fx-wait position-relative d-flex align-items-center text-white overflow-hidden">
-  <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
-  <!-- Nuvola di vernice che esce dalla pistola -->
-  <app-spray-mist [gun]="heroGun" />
-  <!-- Riflesso della luce d'officina che segue il mouse + linee di velocità -->
-  <div class="hero-light position-absolute top-0 start-0 w-100 h-100" aria-hidden="true"></div>
-  <div class="hero-streaks position-absolute top-0 start-0 w-100 h-100" aria-hidden="true">
-    <span></span><span></span><span></span><span></span><span></span>
+<!-- ======= HERO ======= -->
+<section class="hero fx-wait">
+  <div class="hero__bg" aria-hidden="true">
+    <span class="hero__mark">K2K</span>
   </div>
-  <div class="container position-relative z-1 py-5">
-    <div class="row align-items-center min-vh-75">
-      <div class="col-lg-7">
-        <span class="badge bg-k2k-red rounded-pill px-3 py-2 mb-3 fs-6 hero-in">Carrozzeria Professionale</span>
-        <h1 class="display-3 fw-bold lh-sm mb-4">
-          L'energia della <span class="text-k2k-red hero-gloss">nuova carrozzeria</span><br>
-          a Gambettola e Borello.
-        </h1>
-        <p class="lead text-white-50 mb-4 fs-5 hero-in" style="--d: .7s">
-          Un team giovane e dinamico al tuo servizio. Gestione sinistri completa, verniciatura a forno, centro Glassdrive e auto di cortesia gratuita.
-        </p>
-        <div class="d-flex flex-wrap gap-3 hero-in" style="--d: .9s">
-          <a href="https://wa.me/393277380403?text=Ciao%2C%20vorrei%20un%20preventivo%20rapido" target="_blank" class="btn btn-whatsapp btn-lg">
-            <i class="bi bi-whatsapp me-2"></i> Preventivo WhatsApp
-          </a>
-          <a routerLink="/contatti" class="btn btn-k2k-outline btn-lg text-white border-white">
-            <i class="bi bi-calendar-check me-2"></i> Prenota Appuntamento
-          </a>
-        </div>
-        <p class="hero-hint small mt-4 mb-0 d-none d-lg-block hero-in" style="--d: 1.2s">
-          <i class="fa-solid fa-spray-can-sparkles me-2"></i>Tieni premuto sullo sfondo per verniciare
-        </p>
-      </div>
-      <div class="col-lg-5 d-none d-lg-block text-center position-relative hero-right-col">
-        <img src="logo-k2k-icon.svg" alt="K2K Carrozzeria" class="hero-logo img-fluid">
-        <div class="hero-gun-wrap" aria-hidden="true">
-          <img #heroGun src="spray-gun.svg" alt="Pistola di verniciatura" class="hero-gun">
-        </div>
+
+  <div class="container hero__inner">
+    <!-- Invito al minigioco: si apre solo da qui -->
+    <app-paint-invite class="hero__invite" />
+
+    <div class="hero__copy">
+      <span class="tape hero-in">Carrozzeria professionale</span>
+      <h1 class="hero__title">
+        <span class="line"><span>L'energia della</span></span>
+        <span class="line"><span class="text-k2k-red">nuova carrozzeria</span></span>
+        <span class="line line--sub"><span>a Gambettola e Borello.</span></span>
+      </h1>
+      <p class="hero__lead hero-in" style="--d: .3s">
+        Un team giovane e dinamico al tuo servizio. Gestione sinistri completa, verniciatura a forno, centro Glassdrive e auto di cortesia gratuita.
+      </p>
+      <div class="hero__cta hero-in" style="--d: .42s">
+        <a routerLink="/contatti" class="btn btn-k2k btn-lg">
+          <i class="bi bi-calendar-check me-2"></i>Prenota appuntamento
+        </a>
+        <a routerLink="/servizi" class="btn btn-ghost btn-lg">
+          Scopri i servizi<i class="bi bi-arrow-right ms-2"></i>
+        </a>
       </div>
     </div>
+
+    <!-- Preventivo: i tre passi per chiederlo -->
+    <aside class="hero-card hero-in" style="--d: .5s" aria-label="Come chiedere un preventivo">
+      <p class="hero-card__title">Preventivo rapido e gratuito</p>
+      <ol class="hero-card__steps">
+        @for (p of preventivo; track p.title; let i = $index) {
+          <li>
+            <b aria-hidden="true">{{ i + 1 }}</b>
+            <div>
+              <strong>{{ p.title }}</strong>
+              <span>{{ p.text }}</span>
+            </div>
+          </li>
+        }
+      </ol>
+      <a href="https://wa.me/393277380403?text=Ciao%2C%20vorrei%20un%20preventivo%20rapido" target="_blank" class="btn btn-whatsapp">
+        <i class="bi bi-whatsapp me-2"></i>Preventivo WhatsApp
+      </a>
+      <p class="hero-card__alt">
+        Oppure chiama:
+        <span>Gambettola <a href="tel:054759528">0547 59528</a></span>
+        <span>Borello <a href="tel:3277380403">327 738 0403</a></span>
+      </p>
+    </aside>
+  </div>
+
+  <!-- I numeri in breve -->
+  <div class="hero__facts hero-in" style="--d: .65s">
+    <ul class="container">
+      @for (f of fatti; track f.label) {
+        <li><b>{{ f.value }}</b><span>{{ f.label }}</span></li>
+      }
+    </ul>
   </div>
 </section>
 
 <!-- ======= PARTNER BANNER ======= -->
 <app-partner-banner />
 
-<!-- ======= PERCHÉ K2K ======= -->
-<section class="section-padding bg-k2k-gray">
+<!-- ======= COME LAVORIAMO: CINQUE PASSI IN FILA ======= -->
+<section class="section-padding process">
   <div class="container">
     <div class="text-center section-header">
-      <h2 class="fw-bold display-6">Perché scegliere <span class="text-k2k-red">K2K SRL</span></h2>
+      <span class="tape">Come lavoriamo</span>
+      <h2>Dal danno <span class="text-k2k-red">alla riconsegna</span></h2>
+      <p class="text-muted mx-auto" style="max-width:600px">Cinque passaggi, dal primo contatto alla riconsegna dell'auto.</p>
+    </div>
+    <ol class="steps" data-inview>
+      @for (s of percorso; track s.title; let i = $index) {
+        <li class="steps__item" [style.--i]="i">
+          <span class="steps__node" aria-hidden="true"><i [class]="s.icon"></i></span>
+          <div class="steps__body">
+            <span class="steps__num" aria-hidden="true">0{{ i + 1 }}</span>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.text }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- ======= PERCHÉ K2K ======= -->
+<section class="section-padding bg-k2k-gray why">
+  <div class="container">
+    <div class="text-center section-header">
+      <span class="tape">Zero pensieri</span>
+      <h2>Perché scegliere <span class="text-k2k-red">K2K SRL</span></h2>
       <p class="text-muted mx-auto" style="max-width:600px">Professionalità, trasparenza e tecnologie all'avanguardia in entrambe le nostre sedi.</p>
     </div>
     <div class="row g-4">
-      <!-- Card 1 -->
-      <div class="col-md-6 col-lg-3">
-        <div class="card card-hover border-0 shadow-sm h-100 text-center p-4">
-          <div class="card-body">
-            <div class="icon-circle d-inline-flex align-items-center justify-content-center mb-3">
-              <i class="fa-solid fa-file-shield"></i>
+      @for (w of perche; track w.title; let i = $index) {
+        <div class="col-md-6 col-lg-3">
+          <article class="card card-hover why-card border-0 h-100">
+            <span class="why-card__num" aria-hidden="true">0{{ i + 1 }}</span>
+            <div class="icon-circle d-inline-flex align-items-center justify-content-center">
+              <i [class]="w.icon"></i>
             </div>
-            <h5 class="fw-bold">Sinistri Zero Pensieri</h5>
-            <p class="text-muted small">Gestiamo tutto noi con Allianz, Generali, Prima e Zurich. Nessun anticipo.</p>
-          </div>
+            <h3 class="h5">{{ w.title }}</h3>
+            <p>{{ w.text }}</p>
+          </article>
         </div>
-      </div>
-      <!-- Card 2 -->
-      <div class="col-md-6 col-lg-3">
-        <div class="card card-hover border-0 shadow-sm h-100 text-center p-4">
-          <div class="card-body">
-            <div class="icon-circle d-inline-flex align-items-center justify-content-center mb-3">
-              <i class="fa-solid fa-spray-can-sparkles"></i>
-            </div>
-            <h5 class="fw-bold">Verniciatura a Forno</h5>
-            <p class="text-muted small">Tecnologie di ultima generazione per un risultato perfetto e duraturo.</p>
-          </div>
-        </div>
-      </div>
-      <!-- Card 3 -->
-      <div class="col-md-6 col-lg-3">
-        <div class="card card-hover border-0 shadow-sm h-100 text-center p-4">
-          <div class="card-body">
-            <div class="icon-circle d-inline-flex align-items-center justify-content-center mb-3">
-              <i class="fa-solid fa-car"></i>
-            </div>
-            <h5 class="fw-bold">Auto di Cortesia</h5>
-            <p class="text-muted small">Mobilità garantita per tutta la durata dell'intervento, senza costi aggiuntivi.</p>
-          </div>
-        </div>
-      </div>
-      <!-- Card 4 -->
-      <div class="col-md-6 col-lg-3">
-        <div class="card card-hover border-0 shadow-sm h-100 text-center p-4">
-          <div class="card-body">
-            <div class="icon-circle d-inline-flex align-items-center justify-content-center mb-3">
-              <i class="fa-solid fa-pump-soap"></i>
-            </div>
-            <h5 class="fw-bold">Lavaggio Omaggio</h5>
-            <p class="text-muted small">Lavaggio esterno e igienizzazione interni inclusi in ogni riparazione.</p>
-          </div>
-        </div>
-      </div>
+      }
     </div>
   </div>
 </section>
 
 <!-- ======= SERVIZI RAPIDI ======= -->
-<section class="section-padding">
+<section class="section-padding services">
   <div class="container">
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
-        <span class="badge bg-k2k-red rounded-pill px-3 py-2 mb-3">I Nostri Servizi</span>
-        <h2 class="fw-bold display-6 mb-4">Tutto ciò di cui la tua auto ha bisogno</h2>
-        <div class="d-flex align-items-start mb-3">
-          <i class="fa-solid fa-circle-check text-k2k-red fs-4 me-3 mt-1"></i>
-          <div>
-            <h6 class="fw-bold mb-1">Carrozzeria e Verniciatura a Forno</h6>
-            <p class="text-muted small mb-0">Riparazione danni da collisione con ricambi originali e garanzia.</p>
-          </div>
-        </div>
-        <div class="d-flex align-items-start mb-3">
-          <i class="fa-solid fa-circle-check text-k2k-red fs-4 me-3 mt-1"></i>
-          <div>
-            <h6 class="fw-bold mb-1">Riparazione Danni da Grandine</h6>
-            <p class="text-muted small mb-0">Tecnica levabolli specializzata senza verniciare.</p>
-          </div>
-        </div>
-        <div class="d-flex align-items-start mb-3">
-          <i class="fa-solid fa-circle-check text-k2k-red fs-4 me-3 mt-1"></i>
-          <div>
-            <h6 class="fw-bold mb-1">Centro Glassdrive (Borello)</h6>
-            <p class="text-muted small mb-0">Sostituzione cristalli e ricalibrazione sistemi ADAS.</p>
-          </div>
-        </div>
-        <div class="d-flex align-items-start mb-3">
-          <i class="fa-solid fa-circle-check text-k2k-red fs-4 me-3 mt-1"></i>
-          <div>
-            <h6 class="fw-bold mb-1">Gestione Sinistri Completa</h6>
-            <p class="text-muted small mb-0">Pratiche dirette con le assicurazioni convenzionate.</p>
-          </div>
-        </div>
-        <a routerLink="/servizi" class="btn btn-k2k mt-3">Scopri Tutti i Servizi</a>
+        <span class="tape">I nostri servizi</span>
+        <h2 class="mb-4 mt-2">Tutto ciò di cui la tua auto ha bisogno</h2>
+        <ul class="svc-list">
+          @for (s of servizi; track s.title; let i = $index) {
+            <li>
+              <span class="svc-list__n" aria-hidden="true">0{{ i + 1 }}</span>
+              <div>
+                <h3 class="h6">{{ s.title }}</h3>
+                <p>{{ s.text }}</p>
+              </div>
+            </li>
+          }
+        </ul>
+        <a routerLink="/servizi" class="btn btn-k2k mt-4">Scopri tutti i servizi<i class="bi bi-arrow-right ms-2"></i></a>
       </div>
-      <div class="col-lg-6 text-center">
-        <div class="position-relative">
-          <div class="bg-k2k-red rounded-4 position-absolute top-0 start-0 w-100 h-100" style="transform: rotate(3deg); opacity:0.08"></div>
-          <img src="logo-k2k-icon.svg" alt="K2K Servizi" class="img-fluid rounded-4 position-relative" style="max-height:400px">
+      <div class="col-lg-6">
+        <!-- Mazzetta colori: ogni campione è un servizio -->
+        <div class="fan" data-inview aria-hidden="true">
+          @for (c of mazzetta; track c.label; let i = $index) {
+            <div class="fan__chip" [style.--i]="i" [style.--c]="c.color" [class.fan__chip--light]="c.light">
+              <span>K2K · 0{{ i + 1 }}</span>
+              <b>{{ c.label }}</b>
+            </div>
+          }
         </div>
       </div>
     </div>
@@ -152,63 +150,66 @@
 </section>
 
 <!-- ======= SEDI ======= -->
-<section class="section-padding bg-k2k-dark text-white">
+<section class="section-padding bg-k2k-dark text-white sedi">
   <div class="container">
     <div class="text-center section-header">
-      <h2 class="fw-bold display-6">Le Nostre <span class="text-k2k-red">Sedi</span></h2>
+      <span class="tape">Dove siamo</span>
+      <h2>Le nostre <span class="text-k2k-red">Sedi</span></h2>
       <p class="text-white-50">Due sedi per servirti al meglio nel territorio.</p>
     </div>
     <div class="row g-4">
       <!-- Gambettola -->
       <div class="col-md-6">
-        <div class="card bg-dark border border-secondary border-opacity-25 h-100">
-          <div class="card-body p-4">
-            <h4 class="fw-bold text-white mb-3"><i class="bi bi-geo-alt-fill text-k2k-red me-2"></i>Gambettola</h4>
-            <p class="text-white-50 mb-2"><i class="bi bi-pin-map me-2"></i>Via Antonio Zoffoli, 17</p>
-            <p class="text-white-50 mb-2"><i class="bi bi-telephone me-2"></i><a href="tel:054759528" class="text-white-50 text-decoration-none">0547 59528</a></p>
-            <p class="text-white-50 mb-2" ><i class="bi bi-envelope me-2"></i><a href="mailto:info&#64;k2k-carrozzerie.it" class="text-decoration-none" style="color: #ffffff80;">info&#64;k2k-carrozzerie.it</a></p>
-            <p class="text-white-50 mb-3"><i class="bi bi-wrench me-2"></i>Carrozzeria &amp; Gestione Sinistri</p>
-            <a href="https://maps.google.com/?q=Via+Antonio+Zoffoli+17+Gambettola" target="_blank" class="btn btn-k2k-outline btn-sm">
-              <i class="bi bi-map me-1"></i> Apri Mappa
-            </a>
-          </div>
-        </div>
+        <article class="sede-card h-100" data-inview>
+          <span class="sede-card__n" aria-hidden="true">01</span>
+          <h3>Gambettola</h3>
+          <ul class="sede-card__info">
+            <li><i class="bi bi-pin-map"></i>Via Antonio Zoffoli, 17</li>
+            <li><i class="bi bi-telephone"></i><a href="tel:054759528">0547 59528</a></li>
+            <li><i class="bi bi-envelope"></i><a href="mailto:info&#64;k2k-carrozzerie.it">info&#64;k2k-carrozzerie.it</a></li>
+            <li><i class="bi bi-wrench"></i>Carrozzeria &amp; Gestione Sinistri</li>
+          </ul>
+          <a href="https://maps.google.com/?q=Via+Antonio+Zoffoli+17+Gambettola" target="_blank" class="btn btn-ghost btn-sm">
+            <i class="bi bi-map me-2"></i>Apri mappa
+          </a>
+        </article>
       </div>
       <!-- Borello -->
       <div class="col-md-6">
-        <div class="card bg-dark border border-secondary border-opacity-25 h-100">
-          <div class="card-body p-4">
-            <h4 class="fw-bold text-white mb-3"><i class="bi bi-geo-alt-fill text-k2k-red me-2"></i>Borello</h4>
-            <p class="text-white-50 mb-2"><i class="bi bi-pin-map me-2"></i>Via Siracusa, 127</p>
-            <p class="text-white-50 mb-2"><i class="bi bi-telephone me-2"></i><a href="tel:3277380403" class="text-white-50 text-decoration-none">327 738 0403</a></p>
-   <p class="text-white-50 mb-2" style="color: #ffffff80;"><i class="bi bi-envelope me-2"></i><a href="mailto:info&#64;k2k-carrozzerie.it" class="text-decoration-none" style="color: #ffffff80;">info&#64;k2k-carrozzerie.it</a></p>
-            <p class="text-white-50 mb-3"><i class="bi bi-wrench me-2"></i>Carrozzeria, Sinistri &amp; Centro Glassdrive</p>
-            <a href="https://maps.google.com/?q=Via+Siracusa+127+Borello" target="_blank" class="btn btn-k2k-outline btn-sm">
-              <i class="bi bi-map me-1"></i> Apri Mappa
-            </a>
-          </div>
-        </div>
+        <article class="sede-card h-100" data-inview>
+          <span class="sede-card__n" aria-hidden="true">02</span>
+          <h3>Borello</h3>
+          <ul class="sede-card__info">
+            <li><i class="bi bi-pin-map"></i>Via Siracusa, 127</li>
+            <li><i class="bi bi-telephone"></i><a href="tel:3277380403">327 738 0403</a></li>
+            <li><i class="bi bi-envelope"></i><a href="mailto:info&#64;k2k-carrozzerie.it">info&#64;k2k-carrozzerie.it</a></li>
+            <li><i class="bi bi-wrench"></i>Carrozzeria, Sinistri &amp; Centro Glassdrive</li>
+          </ul>
+          <a href="https://maps.google.com/?q=Via+Siracusa+127+Borello" target="_blank" class="btn btn-ghost btn-sm">
+            <i class="bi bi-map me-2"></i>Apri mappa
+          </a>
+        </article>
       </div>
     </div>
     <div class="text-center mt-5">
       <a routerLink="/contatti" class="btn btn-k2k btn-lg">
-        <i class="bi bi-calendar-check me-2"></i> Prenota Ora
+        <i class="bi bi-calendar-check me-2"></i>Prenota ora
       </a>
     </div>
   </div>
 </section>
 
 <!-- ======= CTA FINALE ======= -->
-<section class="section-padding bg-k2k-red text-white text-center">
+<section class="section-padding bg-k2k-red text-white text-center cta">
   <div class="container">
-    <h2 class="fw-bold display-6 mb-3">Hai avuto un incidente?</h2>
+    <h2 class="mb-3">Hai avuto un incidente?</h2>
     <p class="lead mb-4">Non aspettare. Contattaci subito per un preventivo rapido e gratuito.</p>
     <div class="d-flex flex-wrap justify-content-center gap-3">
       <a href="https://wa.me/393277380403?text=Ciao%2C%20ho%20avuto%20un%20incidente%20e%20vorrei%20assistenza" target="_blank" class="btn btn-whatsapp btn-lg">
-        <i class="bi bi-whatsapp me-2"></i> Scrivici su WhatsApp
+        <i class="bi bi-whatsapp me-2"></i>Scrivici su WhatsApp
       </a>
-      <a routerLink="/contatti" class="btn btn-light btn-lg fw-semibold text-k2k-red">
-        <i class="bi bi-telephone me-2"></i> Contattaci
+      <a routerLink="/contatti" class="btn btn-light btn-lg text-k2k-red">
+        <i class="bi bi-telephone me-2"></i>Contattaci
       </a>
     </div>
   </div>

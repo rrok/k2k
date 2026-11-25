@@ -2,8 +2,8 @@ import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, inject, si
 import { Painter, Particle, SprayCloud, drawPainter, gaussian, painterTip, preloadGun } from '../../fx/spray-engine';
 
 /**
- * Intro "cabina di verniciatura": il verniciatore cammina sopra il logo K2K
- * e lo vernicia (andata e ritorno), poi la cabina si apre come una saracinesca.
+ * Intro "saracinesca dell'officina": il verniciatore cammina sopra il logo K2K
+ * e lo vernicia sulla serranda, che poi si alza scoprendo la cabina dal basso.
  * Mostrata una sola volta per sessione, saltabile con un click.
  */
 @Component({
@@ -12,10 +12,12 @@ import { Painter, Particle, SprayCloud, drawPainter, gaussian, painterTip, prelo
   template: `
     @if (visible()) {
       <div class="paint-intro" [class.paint-intro--open]="opening()" (click)="skip()" role="presentation">
-        <canvas #canvas class="paint-intro__canvas"></canvas>
-        <div class="paint-intro__label">
-          <span>Cabina di verniciatura</span>
-          <small>clicca per entrare</small>
+        <div class="paint-intro__door">
+          <canvas #canvas class="paint-intro__canvas"></canvas>
+          <div class="paint-intro__label">
+            <span>Cabina di verniciatura</span>
+            <small>tocca per entrare</small>
+          </div>
         </div>
       </div>
     }
@@ -96,9 +98,9 @@ export class PaintIntroComponent implements OnInit, OnDestroy {
     };
     img.onload = drawLogoMask;
 
-    // Il verniciatore cammina sul bordo superiore del logo: andata verso destra, ritorno verso sinistra
+    // Il verniciatore cammina sul bordo superiore del logo, da sinistra a destra
     const passDur = 1500;
-    const duration = passDur * 2;
+    const duration = passDur;
     const t0 = performance.now();
     let last = t0;
     const gh = Math.max(90, Math.min(size * 0.2, 150));
@@ -113,7 +115,7 @@ export class PaintIntroComponent implements OnInit, OnDestroy {
         feetX: box.x - gh * 0.3 + p * (box.w + gh * 0.6) - lead,
         // Il polso sale e scende per coprire tutta l'altezza delle lettere
         tx: box.x - gh * 0.3 + p * (box.w + gh * 0.6),
-        ty: box.y + box.h * (0.5 + Math.sin(t / 70) * 0.36)
+        ty: box.y + box.h * (0.5 + Math.sin(t / 48) * 0.36)
       };
     };
 
@@ -145,7 +147,7 @@ export class PaintIntroComponent implements OnInit, OnDestroy {
         const n = Math.max(1, Math.round(dt * 60));
         cloud.emit(tip.x, tip.y, g.aim, { reach: reachNow, mist: 3 * n, drops: 40 * n, cloud: 1.3 });
         // Copertura densa nel punto colpito
-        for (let k2 = 0; k2 < 120; k2++) {
+        for (let k2 = 0; k2 < 260; k2++) {
           const r = Math.abs(gaussian()) * reach * 0.42;
           const a = Math.random() * Math.PI * 2;
           const s = Math.random() * 3 + 0.8;
@@ -153,8 +155,8 @@ export class PaintIntroComponent implements OnInit, OnDestroy {
           pctx.fillRect(path.tx + Math.cos(a) * r, path.ty + Math.sin(a) * r * 1.3, s, s);
         }
       } else {
-        // Finito: se ne va saltellando a sinistra
-        g.x -= gh * 2.2 * dt;
+        // Finito: se ne va a destra
+        g.x += gh * 2.2 * dt;
         g.phase += gh * 2.2 * dt / (gh * 0.2);
         g.alpha = Math.max(0, 1 - (t - duration) / 500);
       }
@@ -184,11 +186,11 @@ export class PaintIntroComponent implements OnInit, OnDestroy {
       cloud.draw(ctx, 'lighter');
       drawPainter(ctx, g);
 
-      if (t < duration + 700) {
+      if (t < duration + 520) {
         this.raf = requestAnimationFrame(frame);
       } else {
         canvas.classList.add('paint-intro__canvas--done');
-        this.timers.push(window.setTimeout(() => this.zone.run(() => this.open()), 350));
+        this.timers.push(window.setTimeout(() => this.zone.run(() => this.open()), 260));
       }
     };
 
@@ -207,7 +209,7 @@ export class PaintIntroComponent implements OnInit, OnDestroy {
     cancelAnimationFrame(this.raf);
     this.opening.set(true);
     document.documentElement.classList.remove('intro-lock');
-    this.timers.push(window.setTimeout(() => this.visible.set(false), 900));
+    this.timers.push(window.setTimeout(() => this.visible.set(false), 1250));
   }
 
   private cleanup(): void {

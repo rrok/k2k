@@ -1,0 +1,9 @@
+suv.glb
+-------
+"Mercedes Benz GLS 580" by Joses (L.F.Contop)
+https://sketchfab.com/3d-models/mercedes-benz-gls-580-b5af1a627724412aafca863feab06095
+Licensed under Creative Commons Attribution 4.0 (CC BY 4.0)
+http://creativecommons.org/licenses/by/4.0/
+
+Changes: display stand removed, geometry simplified and compressed for web use,
+materials replaced at runtime (primer, paint, glass, chrome).
